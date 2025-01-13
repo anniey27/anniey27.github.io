@@ -26,10 +26,15 @@ body {
   max-width: 1000px;
   padding: 2em;
   margin: auto;
+
+  gap: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {
   font-weight: 800;
+  text-align: center;
 }
 
 h2 {
@@ -38,13 +43,26 @@ h2 {
 
 .header {
   display: flex;
-  gap: 1.5em;
-  margin-top: 2em;
+  gap: 2em;
 }
 
 .header img {
   width: 40%;
-  object-fit: cover;
+}
+
+.imagecaption {
+  display: flex;
+  flex-direction: column;
+}
+
+.header .imagecaption img {
+  width: 150%;
+}
+
+.vertical {
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.5rem;
 }
 
 .grid {

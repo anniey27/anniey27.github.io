@@ -9,10 +9,84 @@
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <h1 style="text-align: center;">Annie's Assignment 1!</h1>
+    <h1>Assignment 1: Blink!</h1>
     <div class="header">
-      <img src="bunny.jpg" />
-      <p>Here is all the documentation for assignment 1!</p>
+      <div class="imagecaption">
+        <img src="images/A1_schematic.png"/>
+        <p>Schematic for 3 independent LEDs in a circuit</p>
+      </div>
+      <div class="vertical">
+        <h2>Overview</h2>
+        <p>
+          First, I created a schematic (left) for 3 LEDs connected to the Arduino, 
+          which was then implemented as a circuit on my breadboard. Later,
+          I wrote firmware in an .ino file that made the 3 LEDS blink independently,
+          in a pattern.
+        </p>
+      </div>
+    </div>
+
+    <div class="vertical">
+      <h2>Resistance Calculation</h2>
+      <p>I used yellow, green, and red LEDs that have a 1.8V drop.</p>
+      <p>5V - 1.8V = 0.02A * R</p>
+      <p>3.2V = 0.02A * R</p>
+      <p>R = 3.2V / 0.02A</p>
+      <p>R = 160Ω</p>
+      <p>This means that each circuit requires a resistance of at least 160Ω. 
+        Therefore, I used a 220Ω resistor, as that is the closest value over 
+        160. 
+      </p>
+    </div>
+
+    <div class="header">
+      <div class="vertical">
+        <h2>Building the Circuit</h2>
+        <p>
+          I brought the schematic to life, choosing pins 13, 10, and 4 and yellow, 
+          green, and red LEDs to output the blinks. Each independent path consists 
+          of going from the respective pin, to a 220Ω resistor, to the LED, to ground.
+        </p>
+      </div>
+      <div class="imagecaption">
+        <img src="images/circuitA1.jpeg"/>
+        <p>Circuit of 3 LEDs</p>
+      </div>
+    </div>
+
+    <div class="vertical">
+      <h2>Coding the Firmware</h2>
+      <p>
+        Then, I coded the firmware in an .ino file to implement a pattern of blinking 
+        lights. The order goes: yellow, green, then red light up, then yellow, green, 
+        red turns off. Full code below.
+      </p>
+      <pre><code>
+        // the setup function runs once when you press reset or power the board
+        void setup() {
+          pinMode(13, OUTPUT); // initializing digital pin 13 as an output
+          pinMode(10, OUTPUT); // initializing digital pin 10 as an output
+          pinMode(4, OUTPUT); // initializing digital pin 4 as an output
+        }
+
+        // the loop function runs over and over again forever
+        void loop() {
+          digitalWrite(13, HIGH); // turns ON LED connected to pin 13
+          delay(500); // waits for half a second
+          digitalWrite(10, HIGH); // turns ON LED connected to pin 10
+          delay(500); // waits for half a second
+          digitalWrite(4, HIGH); // turns ON LED connected to pin 4
+          delay(500); // waits for half a second
+          digitalWrite(13, LOW); // turns OFF LED connected to pin 13
+          delay(500); // waits for half a second
+          digitalWrite(10, LOW); // turns OFF LED connected to pin 10
+          delay(500); // waits for half a second
+          digitalWrite(4, LOW); // turns OFF LED connected to pin 4
+          delay(500); // waits for half a second
+        }
+      </code></pre>
+      <p>Here is the final output operation! Warning: it is bright.</p>
+      <img src="images/A1_circuitop.GIF">
     </div>
   </body>
 </html>
