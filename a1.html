@@ -18,10 +18,9 @@
       <div class="vertical">
         <h2>Overview</h2>
         <p>
-          First, I created a schematic (left) for 3 LEDs connected to the Arduino, 
-          which was then implemented as a circuit on my breadboard. Later,
-          I wrote firmware in an .ino file that made the 3 LEDS blink independently,
-          in a pattern.
+          First, I created a schematic (left) for 3 LEDs that connect to Arduino 
+          and implemented as a circuit on my breadboard. Later, I wrote firmware 
+          in an .ino file that made the 3 LEDS blink independently, in a pattern.
         </p>
       </div>
     </div>
@@ -88,5 +87,45 @@
       <p>Here is the final output operation! Warning: it is bright.</p>
       <img src="images/A1_circuitop.GIF">
     </div>
+
+    <div class="vertical">
+      <h2>Additional Questions</h2>
+      <div class="A1questions">
+        <div class="imagecaption">
+          <h3>
+            1. Draw a graph where the X axis is time and the Y axis is voltage 
+            across the LEDs. Draw a line for each of your 3 LEDs.
+          </h3>
+          <img src="images/A1_graph.jpeg">
+          <p>
+            This graph shows the change in voltage for each LED as time goes on 
+            in seconds. When the line is at 5V, that means the LED is on. It is 
+            off at 0V.
+          </p>
+        </div>
+        <div class="vertical">
+          <h3>
+            2. How many LEDs could you blink independently with your Arduino? 
+            How much current would that draw?
+          </h3>
+          <p>
+            Since there are 14 digital pins (0-13) in an Arduino, I think 14 outputs 
+            could be drawn to make 14 different LEDs blink independently. Each pin 
+            individually draws 20mA or 0.02A, so if all 14 are used, then the total 
+            current would be about 280mA or 0.28A drawn.
+          </p>
+        </div>
+        <div class="vertical">
+          <h3>
+            3. How fast do you need to blink your LEDs until you no longer can tell 
+            that they are blinking?
+          </h3>
+          <p>
+            After some testing, I found that 12ms is the threshhold where I could no 
+            longer tell that the LED was blinking. 
+          </p>
+      </div>
+    </div>
+    <footer></footer>
   </body>
 </html>
