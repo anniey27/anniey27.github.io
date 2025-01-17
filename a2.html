@@ -10,9 +10,108 @@
   </head>
   <body>
     <h1 style="text-align: center;">Assignment 1: Fade!</h1>
-    <div class="header">
-      <img src="images/A2_circuit.jpeg" />
-      <p>Here is all the documentation for assignment 2!</p>
+    <div class="vertical">
+      <h2>Overview</h2>
+      <p>
+        First, I created a schematic (below) for a button that is read to 
+        activate 3 fading LEDs (that can also act independently). I used this 
+        to implement the circuit on my breadboard connected to my Arduino. 
+        Then, I wrote firmware in an .ino file to execute a scenario where a 
+        button press causes a sequence of 3 fading LEDs in order. 
+      </p>
+      <div class="imagecaption">
+        <img src="images/A2_schematic.png"/>
+        <p style="text-align: center;">Schematic for a button and 3 LEDs</p>
+      </div>
     </div>
+
+    <div class="vertical">
+      <h2>Resistance Calculations</h2>
+      <p>I used green, yellow, and red LEDs that each have a 1.8V drop.</p>
+      <p>5V - 1.8V = 0.02A * R</p>
+      <p>3.2V = 0.02A * R</p>
+      <p>R = 3.2V / 0.02A</p>
+      <p>R = 160Ω</p>
+      <p>This means that each LED requires a resistance of at least 160Ω. 
+        Therefore, I used a 220Ω resistor for each light, as that is the 
+        closest value over 160. 
+      </p>
+      <p></p>
+      <p>
+        For the button, a 10kΩ resistor is the standard to use. Without it,  
+        the Arduino's input is left "floating" when the button isn't pressed. 
+        The 10k resistor "pulls" the input to GND so it has a defined state.
+        10k is small enough to reliably pull the input to GND while still 
+        large enough that only a small current is drawn when the input is 
+        connected to power.
+    </div>
+
+    <div class="header">
+      <div class="vertical">
+        <h2>Building the Circuit</h2>
+        <p>
+          I brought the schematic to life, choosing pins 11, 10, and 9 to connect my 
+          LEDs that I want to fade as these pins work with analogWrite(). I chose 
+          green, yellow, and red to output the lights. These three LEDs have independent 
+          paths from the pins to ground, separate from the button as I later code so that 
+          they activate after reading the state of the button. For the button, it starts 
+          from power (5V) and pin 2 to allocate power for when the button is off, and ends
+          at ground.
+        </p>
+      </div>
+      <div class="imagecaption">
+        <img src="images/A2_circuit2.jpg"/>
+        <p>Circuit of a button and 3 LEDs</p>
+      </div>
+    </div>
+
+    <div class="vertical">
+      <h2>Coding the Firmware</h2>
+      <p>
+        Then, I coded the firmware in an .ino file to implement a pattern of blinking 
+        lights. The order goes: yellow, green, then red light up, then yellow, green, 
+        red turns off. Full code below.
+      </p>
+      <pre><code>
+        int G = 11; // the pin the green LED is attached to 
+        int Y = 10; // the pin the yellow LED is attached to 
+        int R = 9; // the pin the red LED is attached to 
+
+        // the setup routine runs once when you press reset:
+        void setup() {
+          pinMode(G, OUTPUT); // initializing G pin as an output
+          pinMode(Y, OUTPUT); // initializing G pin as an output
+          pinMode(R, OUTPUT); // initializing G pin as an output
+          pinMode(2, INPUT); // initializing pin 2 as an input (for button)
+        }
+
+        // the loop routine runs over and over again forever:
+        void loop() {
+          int buttonState = digitalRead(2); // initializing buttonState to read whether button has been pressed
+
+          if (buttonState){ // only if the button has been pressed the below happens
+            for(int i = 192; i > 0;i--){ // starts a loop for green LED to fade, starting at i and fading to 0
+              analogWrite(G, i); // turns green LED on to i state
+              delay(5); // delays next loop for 5 ms
+              digitalWrite(G, LOW); // turns green LED off once it fades to 0
+          }
+            for(int i = 192; i > 0;i--){ // starts a loop for yellow LED to fade, starting at i and fading to 0
+              analogWrite(Y, i); // turns yellow LED on to i state
+              delay(5); // delays next loop for 5 ms
+              digitalWrite(Y, LOW); // turns yellow LED off once it fades to 0
+            }
+            for(int i = 192; i > 0;i--){ // starts a loop for red LED to fade, starting at i and fading to 0
+              analogWrite(R, i); // turns red LED on to i state
+              delay(5); // delays next loop for 5 ms
+              digitalWrite(R, LOW); // turns red LED off once it fades to 0
+            }
+          } 
+        }
+      </code></pre>
+      <p>Here is the final output operation!</p>
+      <img src="images/A2_circuitop.gif">
+    </div>
+
+    <footer></footer>
   </body>
 </html>
