@@ -112,6 +112,43 @@
       <img src="images/A2_circuitop.gif">
     </div>
 
+    <div class="vertical">
+      <h2>Additional Questions</h2>
+      <div class="A1questions">
+        <div class="imagecaption">
+          <h3>
+            1. Draw a chart where the X axis is time and the Y axis is voltage. 
+            Draw 3 lines representing the voltage across an LED with analogWrite(led, 64), 
+            analogWrite(led, 128), and analogWrite(led,255).
+          </h3>
+          <img src="images/A2_graph.jpeg">
+          <p>
+            This graph shows the change in voltage for each LED as time goes on 
+            in cycles, depending on the duty cycle. 
+          </p>
+        </div>
+        <div class="vertical">
+          <h3>
+            2. Given your schematic, circuit, and firmware, assuming the only thing 
+            that draws current is your LEDs, how long would your circuit run if 
+            powered by a 1200 mAh battery?
+          </h3>
+          <p>
+            Battery life is equal to capacity (mAh) over current drawn (mA). If the 
+            battery is powered by 1200 mAh and each LED draws 20mA, then the equation 
+            would be:
+          </p>
+          <p>Battery life (hours) = 1200 mAh / (20 mA * 3 LEDs)</p>
+          <p>Battery life (hours) = 1200 mAh / 60 mA</p>
+          <p>Battery life = 20 hours</p>
+          <p>My circuit would run for approximately 20 hours if powered by a 1200 
+            mAh battery.
+          </p>
+          </p>
+        </div>
+      </div>
+    </div>
+
     <footer></footer>
   </body>
 </html>
