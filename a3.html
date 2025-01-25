@@ -10,9 +10,23 @@
   </head>
   <body>
     <h1 style="text-align: center;">Assignment 3: Input Output!</h1>
-    <div class="header">
-      <img src="images/A3_circuit.jpeg" />
-      <p>Here is all the documentation for assignment 3!</p>
+    <div class="vertical">
+      <h2>Overview</h2>
+      <p>
+        First, I created a schematic (below) for a joystick that will be read  
+        to activate 2 different LEDs at different levels of brightness depending on 
+        the x and y values the joystick is moved to. These are all independent from 
+        each other. I used this to implement the circuit on my breadboard connected 
+        to my Arduino. Then, I wrote firmware in an .ino file to connect the joystick 
+        and LEDs together using analogRead, analogWrite, map, and more. I created a 
+        scenario where if you moved the joystick left or right, that determines the LED
+        that gets affected by wherever the joystick is moved up or down, which affects 
+        brightness/dimness of that particular LED.
+      </p>
+      <div class="imagecaption">
+        <img src="images/A3_schematic.png"/>
+        <p style="text-align: center;">Schematic for a joystick and 2 LEDs</p>
+      </div>
     </div>
   </body>
 </html>
