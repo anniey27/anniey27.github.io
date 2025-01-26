@@ -28,5 +28,62 @@
         <p style="text-align: center;">Schematic for a joystick and 2 LEDs</p>
       </div>
     </div>
+
+    <div class="vertical">
+      <h2>Resistance and Voltage Divider Calculations</h2>
+      <p>I used red and green LEDs that each have a 1.8V drop.</p>
+      <p>5V - 1.8V = 0.02A * R</p>
+      <p>3.2V = 0.02A * R</p>
+      <p>R = 3.2V / 0.02A</p>
+      <p>R = 160Ω</p>
+      <p>This means that each LED requires a resistance of at least 160Ω. 
+        Therefore, I used a 220Ω resistor for each light, as that is the 
+        closest value over 160. 
+      </p>
+      <p></p>
+      <p>
+        For the joystick, I did not use a resistor because it has internal
+        potentiometers which are standardly 10kΩ each. 10kΩ allows for a good, 
+        reliable balance between sensitivity and accuracy for most joystick 
+        applications. This allows for a wide range of voltage output with control. 
+      </p>
+      <p>
+        The two potentiometers in the joystick essentially act as voltage dividers, 
+        eliminating the need for any external ones. They each divide the total supply 
+        voltage (5V) by a fraction that changes depending on the joystick's position, 
+        sending that output to x and y. We use analogRead() for the two analog input 
+        pins associated with x and y to obtain the values that correspond with those 
+        positions. 
+      </p>
+      <p>
+        The values we might read at the voltage divider would range between 0V (analog 
+        reading = 0) and 5V (analog reading = 1023). At neutral position, it would read 
+        around 2.5V and the analog reading = 512. To calculate the voltage at any time, 
+        we would use V<sub>out</sub> = V<sub>in</sub> * [<numerator>R<sub>down</sub> 
+        </numerator>&frasl;<denominator> (R<sub>down</sub> + R<sub>up</sub>)</denominator>]. 
+      </p>
+      <p>
+        For example, we know each potentiometer is 10kΩ, so at neutral position, R<sub>down</sub> 
+        = 5000Ω and R<sub>up</sub> = 5000Ω. Therefore, the voltage out at this time would be 5V 
+        * [<numerator>5000Ω </numerator>&frasl;<denominator> (5000Ω + 5000Ω)</denominator>] = 5V 
+        * [<numerator>5000Ω </numerator>&frasl;<denominator> (10000Ω)</denominator>] = 5V * 0.5 
+        = 2.5V. 
+      </p>
+    </div>
+
+    <div class="vertical">
+        <h2>Building the Circuit</h2>
+        <p>
+          I brought the schematic to life, connecting my LEDs to pin 9 and 10. The joystick 
+          is on its own. It grabs power from 5V and connects to ground. VRx and VRy read from 
+          analog pins A0 and A1. Lastly, SW on the joystick is the switch, which functions by 
+          outputting a digital signal if the joystick is moved. This is connected to digital 
+          pin 3. 
+        </p>
+      <div class="imagecaption">
+        <img src="images/A3_circuit.jpeg"/>
+        <p style="text-align: center;">Circuit of a joystick and 2 LEDs</p>
+      </div>
+    </div>
   </body>
 </html>

@@ -23,7 +23,13 @@
       <div class="assignment">
         <a href="a1.html">
           <h2>Assignment 1: Blink!</h2>
-          <img src="images/circuitA1.jpeg" />
+          <img 
+            src="images/circuitA1.jpeg" 
+            data-static="images/circuitA1.jpeg"
+            data-animated="images/A1_circuitop.gif"
+            onmouseover="this.src=this.getAttribute('data-animated')"
+            onmouseout="this.src=this.getAttribute('data-static')"
+          />
         </a>
         <p>Creating a circuit for 3 LEDs to light up (blink!) independently.</p>
       </div>
@@ -31,7 +37,13 @@
       <div class="assignment">
         <a href="a2.html">
           <h2>Assignment 2: Fade!</h2>
-          <img src="images/A2_circuit.jpeg" />
+          <img 
+            src="images/A2_circuit.jpeg" 
+            data-static="images/A2_circuit.jpeg"
+            data-animated="images/A2_circuitop.gif"
+            onmouseover="this.src=this.getAttribute('data-animated')"
+            onmouseout="this.src=this.getAttribute('data-static')"
+          />
         </a>
         <p>Creating a sequence of 3 fading LEDs activated by a button press.</p>
       </div>
@@ -41,8 +53,10 @@
           <h2>Assignment 3: Input!</h2>
           <img src="images/A3_circuit.jpeg" />
         </a>
-        <p>Taking in change from the physical world (with a joystick) to change 
-          the output of 2 LEDs with the change in resistance.</p>
+        <p>
+          Taking in change from the physical world (with a joystick) to change 
+          the output of 2 LEDs with the change in resistance.
+        </p>
       </div>
     </div>
   </body>
