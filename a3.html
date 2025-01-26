@@ -59,12 +59,12 @@
         The values we might read at the voltage divider would range between 0V (analog 
         reading = 0) and 5V (analog reading = 1023). At neutral position, it would read 
         around 2.5V and the analog reading = 512. To calculate the voltage at any time, 
-        we would use V<sub>out</sub> = V<sub>in</sub> * [<numerator>R<sub>down</sub> 
-        </numerator>&frasl;<denominator> (R<sub>down</sub> + R<sub>up</sub>)</denominator>]. 
+        we would use V<sub>out</sub> = V<sub>in</sub> * [<numerator>R<sub>1</sub> 
+        </numerator>&frasl;<denominator> (R<sub>1</sub> + R<sub>2</sub>)</denominator>]. 
       </p>
       <p>
-        For example, we know each potentiometer is 10kΩ, so at neutral position, R<sub>down</sub> 
-        = 5000Ω and R<sub>up</sub> = 5000Ω. Therefore, the voltage out at this time would be 5V 
+        For example, we know each potentiometer is 10kΩ, so at neutral position, R<sub>1</sub> 
+        = 5000Ω and R<sub>2</sub> = 5000Ω. Therefore, the voltage out at this time would be 5V 
         * [<numerator>5000Ω </numerator>&frasl;<denominator> (5000Ω + 5000Ω)</denominator>] = 5V 
         * [<numerator>5000Ω </numerator>&frasl;<denominator> (10000Ω)</denominator>] = 5V * 0.5 
         = 2.5V. 
@@ -134,10 +134,88 @@
           Serial.print("y = ");
           Serial.println(outputYValue);
         }
-
       </code></pre>
       <p>Here is the final output operation!</p>
       <img src="images/A3_circuitop.gif">
+    </div>
+    <p></p>
+
+    <div class="vertical">
+      <h2>Additional Questions</h2>
+      <div class="A1questions">
+        <div class="vertical">
+          <h3>
+            1. In your voltage divider, can the variable resistor be either R1 or R2 
+            or does it need to be one or the other? Justify your answer with example 
+            calculations.
+          </h3>
+          <p>
+            The variable resistor (or the potentiometers in my joystick in this case) can 
+            be either R<sub>1</sub> or R<sub>2</sub>, it doesn't matter. However, they will 
+            differ in the range of voltage it can output as resistance changes.
+          </p>
+          <p>
+            Let's say it was R<sub>2</sub> first. My equation is: V<sub>out</sub> = V<sub>in</sub> 
+            * [<numerator>R<sub>1</sub> </numerator>&frasl;<denominator> (R<sub>1</sub> + R
+              <sub>2</sub>)</denominator>]. So R<sub>2</sub> can vary from 0 to 10kΩ, 
+            while R<sub>1</sub> stays fixed at 10kΩ. If R<sub>2</sub> = 0Ω, then V<sub>out</sub> 
+            = 5V * [<numerator>10000Ω </numerator>&frasl;<denominator> 10000Ω + 0</denominator>] 
+            = 5V * 1 = <b>5V</b>. If R<sub>2</sub> = 10000Ω, then V<sub>out</sub> = 5V * [<numerator>
+              10000Ω </numerator>&frasl;<denominator> 10000Ω + 10000Ω</denominator>] = 5V * 0.5 = 
+              <b>2.5V</b>.
+          </p>
+          <p>
+            Now let's say it was R<sub>1</sub>. So R<sub>1</sub> can vary from 0 to 10kΩ, 
+            while R<sub>2</sub> stays fixed at 10kΩ. If R<sub>1</sub> = 0Ω, then V<sub>out</sub> 
+            = 5V * [<numerator>0 </numerator>&frasl;<denominator> 0 + 10000Ω</denominator>] 
+            = 5V * 0 = <b>0V</b>. If R<sub>1</sub> = 10000Ω, then V<sub>out</sub> = 5V * [<numerator>
+              10000Ω </numerator>&frasl;<denominator> 10000Ω + 10000Ω</denominator>] = 5V * 0.5 = 
+              <b>2.5V</b>.
+          </p>
+          <p>
+            R<sub>1</sub>'s voltage output ranges from 0 to 2.5V while for R<sub>2</sub>, the voltage 
+            output ranges from 2.5V to 5V. Together, they combine for the full range of 0 to 5V. 
+            <b>Either one is valid</b>; what matters is whether we want the output to default to 0V 
+            or 5V (or in between) when the variable resistor is at a particular end.
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <div class="imagecaption">
+        <h3>
+          2. Draw a graph where the x-axis is time and the y-axis is voltage. Plot the 
+          voltage at V-measure of your voltage divider of your shared gif.
+        </h3>
+        <img src="images/A3_graph.jpeg">
+        <p>
+          This graph shows the change in voltage for the red and green LEDs corresponding 
+          to my gif where I first manipulate the joystick to the left, then up and down to 
+          make the red LED go from neutral, to dim then bright. Then I move the joystick to 
+          the right, then up and down to make the green LED go from neutral, to dim then bright 
+          (and back to neutral).
+        </p>
+      </div>
+      <br>
+
+      <div class="vertical">
+        <h3>
+          3. AnalogWrite and analogRead are respectively 8-bit and 10-bit values. 
+          Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. 
+          How would this change your map() code? Explain your answer.
+        </h3>
+        <p>
+          If we had a 10-bit PWM means we would then expect values between 0 to 1023, instead 
+          of the normal 255, because now we can get values up to 2<sup>10</sup> = 1023. 
+          Therefore, the code would be "outputYValue = map(yval, 0, 1023, 0, 1023);".
+        </p>
+        <p>
+          If we had a 16-bit analog-to-digital convertor instead, we can now read ADC values up 
+          to 2<sup>16</sup> = 65535. The code would then be "outputYValue = map(yval, 0, 65535, 
+          0, 255);" as we're compressing that large amount of ADC values to 0-255.
+        </p>
+      </div>
+    </div>
     </div>
   </body>
 </html>
