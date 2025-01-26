@@ -51,7 +51,13 @@
       <div class="assignment">
         <a href="a3.html">
           <h2>Assignment 3: Input!</h2>
-          <img src="images/A3_circuit.jpeg" />
+          <img 
+            src="images/A3_circuit.jpeg" 
+            data-static="images/A3_circuit.jpeg"
+            data-animated="images/A3_circuitop.gif"
+            onmouseover="this.src=this.getAttribute('data-animated')"
+            onmouseout="this.src=this.getAttribute('data-static')"
+          />
         </a>
         <p>
           Taking in change from the physical world (with a joystick) to change 

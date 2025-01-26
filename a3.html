@@ -85,5 +85,59 @@
         <p style="text-align: center;">Circuit of a joystick and 2 LEDs</p>
       </div>
     </div>
+
+    <div class="vertical">
+      <h2>Coding the Firmware</h2>
+      <p>
+        Then, I coded the firmware in an .ino file to implement a scenario where the 
+        joystick's x-axis determines which of the two LEDs will be activated while the 
+        y-axis determines the brightness/dimness of the respective LED. On the x-axis, 
+        Left side means red LED while right side is green; on the y-axis, up means dim, 
+        down is bright. For example, if I were to move the joystick to the top left, the 
+        red light would be at its dimmest (and also the green would be at neutral 
+        brightness), and if I were to move the joystick to the bottom right, the green 
+        light would be at its brightest (while red is at neutral brightness). Note: if y 
+        is at neutral position (has not been moved up or down), the LED would be at neutral 
+        brightness. Full code is below.
+      </p>
+      <pre><code>
+        const int analogOutPin9 = 9;  // analog output pin the red LED is attached to
+        const int analogOutPin10 = 10; // analog output pin the green LED is attached to
+        const int x = A0; // analog input pin to read the x value from the joystick
+        const int y = A1; // analog input pin to read the y value from the joystick
+
+        int xval = 0; // initializing xval
+        int yval = 0; // initializing yval
+        int outputYValue = 0;  // initializing outputYValue
+
+        void setup() {
+          Serial.begin(9600); // initialize serial communications at 9600 bps:
+        }
+
+        void loop() {
+          xval = analogRead(x); // reading the analog from joystick for x value
+          yval = analogRead(y); // reading the analog from joystick for y value
+
+          outputYValue = map(yval, 0, 1023, 0, 255); // mapping y value for output 0-255
+
+          // xval determines which pin (LED) is being affected, yval determines the voltage allocated to that LED (brightness/dimness)
+          if (xval < 512) { // if joystick is moved from neutral to left (up to where x = 0), pin 9 is the output
+            analogWrite(analogOutPin9, outputYValue); // changing analog out y value for pin 9
+          } else if (xval > 512) { // if joystick is moved from neutral to right (up to where x = 255), pin 10 is the output
+            analogWrite(analogOutPin10, outputYValue); // changing analog out y value for pin 10
+          } 
+          // else both LEDs stay on at neutral y value brightness
+          
+          // checking what x and y read from the joystick on the serial monitor, this helped me check my scenario was working
+          Serial.print("x = ");
+          Serial.println(outputXValue);
+          Serial.print("y = ");
+          Serial.println(outputYValue);
+        }
+
+      </code></pre>
+      <p>Here is the final output operation!</p>
+      <img src="images/A3_circuitop.gif">
+    </div>
   </body>
 </html>
