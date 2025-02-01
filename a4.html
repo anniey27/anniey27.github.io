@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Annie's HCDE 439 Physical Computing Portfolio</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="images/AYlogo.png" type="image/x-icon">
+  </head>
+  <body>
+    <h1 style="text-align: center;">Assignment 4: Libraries!</h1>
+    <div class="vertical">
+      <h2>Overview</h2>
+      <p>
+        First, I created a schematic (below) for a joystick that will be read  
+        to activate 2 different LEDs at different levels of brightness depending on 
+        the x and y values the joystick is moved to. These are all independent from 
+        each other. I used this to implement the circuit on my breadboard connected 
+        to my Arduino. Then, I wrote firmware in an .ino file to connect the joystick 
+        and LEDs together using analogRead, analogWrite, map, and more. I created a 
+        scenario where if you moved the joystick left or right, that determines the LED
+        that gets affected by wherever the joystick is moved up or down, which affects 
+        brightness/dimness of that particular LED.
+      </p>
+      <div class="imagecaption">
+        <img src="images/A3_schematic.png"/>
+        <p style="text-align: center;">Schematic for a joystick and 2 LEDs</p>
+      </div>
+    </div>
+
+    
+  </body>
+</html>
