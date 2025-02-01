@@ -14,22 +14,36 @@
     <div class="vertical">
       <h2>Overview</h2>
       <p>
-        First, I created a schematic (below) for a joystick that will be read  
-        to activate 2 different LEDs at different levels of brightness depending on 
-        the x and y values the joystick is moved to. These are all independent from 
-        each other. I used this to implement the circuit on my breadboard connected 
-        to my Arduino. Then, I wrote firmware in an .ino file to connect the joystick 
-        and LEDs together using analogRead, analogWrite, map, and more. I created a 
-        scenario where if you moved the joystick left or right, that determines the LED
-        that gets affected by wherever the joystick is moved up or down, which affects 
-        brightness/dimness of that particular LED.
+        I created schematics (below) for two components: a capacitive sensor and a 
+        servo motor. For the capacitive sensor, it receives a signal through pin 2, 
+        which is routed through a 1 megaohm resistor to pin 4. When you touch a metal 
+        object (connected through an alligator clip), it triggers a change in 
+        capacitance, sending a signal back to the system that it can read from (which 
+        will decide when the servo will change positions). The 1 megaohm resistor is 
+        needed for absolute touch on the object to activate a signal. Meanwhile, the 
+        servo motor receives power and a pulse signal from pin 9, and connects to 
+        ground.
       </p>
       <div class="imagecaption">
-        <img src="images/A3_schematic.png"/>
-        <p style="text-align: center;">Schematic for a joystick and 2 LEDs</p>
+        <img src="images/A4_schematic.png"/>
+        <p style="text-align: center;">Schematics for a capacitive sensor and a servo</p>
       </div>
     </div>
 
+    <div class="vertical">
+        <h2>Building the Circuit</h2>
+        <p>
+          I brought the schematic to life, connecting my LEDs to pin 9 and 10. The joystick 
+          is on its own. It grabs power from 5V and connects to ground. VRx and VRy read from 
+          analog pins A0 and A1. Lastly, SW on the joystick is the switch, which functions by 
+          outputting a digital signal if the joystick is moved. This is connected to digital 
+          pin 3. 
+        </p>
+      <div class="imagecaption">
+        <img src="images/A4_circuit.jpg"/>
+        <p style="text-align: center;">Circuit of a capacitive sensor and a servo</p>
+      </div>
+    </div>
     
   </body>
 </html>
