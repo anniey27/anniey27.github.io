@@ -76,9 +76,6 @@
         const int TOUCH_THRESHOLD = 1000; 
 
         void setup() {
-            //turning off auto-calibration
-            cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF); 
-
             // beginning serial monitor
             Serial.begin(9600);
 
@@ -133,49 +130,128 @@
             ground.
             </h3>
             <p>
-              Each step of the loop takes 100 milliseconds, or 0.1 seconds. Since there are 180 
-              steps in each loop, that means each loop takes a total of 0.1 * 180 = 18 seconds. 
-              This graph only covers 2 seconds, so 20 steps. At 0 seconds, the servo will be at 
-              position 0 and using 0V. At the end of the loop, 18 seconds, the servo would be at 
-              position 180 and at full voltage of 5V. Therefore at 2 seconds, the servo will 
-              be at position 20 and the voltage would be 1/9th (20/180) of 5V. 
+              Pin 9 sends the PWM (pulse width modulation) signal to the servo, and the width of 
+              the signal determines the servo's position. It varies between 1 ms and 2 ms and the 
+              voltage alternates between 0V and 5V. For a fixed period of 20 ms, the pulse width 
+              increases from 1ms to 20ms. As the voltage oscillates between 0V and 5V, the amount 
+              of time the signal is at 5V gradually increases while the amount of time that the 
+              signal is at 0V gradually decreases. The PWM signal changes to control the servo's 
+              position.
             </p>
+            <img src="">
           </div>
         </div>
         <br>
   
         <div class="imagecaption">
           <h3>
-            2. Draw a graph where the x-axis is time and the y-axis is voltage. Plot the 
-            voltage at V-measure of your voltage divider of your shared gif.
+            2. Your input device is slightly broken, leading it to give us an erroneous reading 
+            1% of the time. How can we address this? Answer in (pseudo)code.
           </h3>
-          <img src="images/A3_graph.jpeg">
-          <p>
-            This graph shows the change in voltage for the red and green LEDs corresponding 
-            to my gif where I first manipulate the joystick to the left, then up and down to 
-            make the red LED go from neutral, to dim then bright. Then I move the joystick to 
-            the right, then up and down to make the green LED go from neutral, to dim then bright 
-            (and back to neutral).
-          </p>
+          <pre><code>
+            // defining constants for calibration, which will be done by taking 10 readings and calculating the average
+            const int NUM_READINGS = 10; // averaging from this number of readings
+            long readings[NUM_READINGS];  // array for storing readings
+            int readIndex = 0;           // index for current reading
+            long total = 0;              // total sum of the readings
+            long average = 0;            // average value of the readings
+
+            void setup() {
+                // beginning serial monitor
+                Serial.begin(9600);
+
+                //attaching servo to pin 9
+                myservo.attach(9);
+                
+                // initializing readings array
+                for (int i = 0; i < NUM_READINGS; i++) {
+                    readings[i] = 0; // starting with zero
+                }
+            }
+
+            void loop() {
+                // reads the sensor to see if the metal object was touched
+                long touch = cs_4_2.capacitiveSensor(30); // takes 30 readings and returns sum of the results
+
+                // subtract the last reading from the total
+                total -= readings[readIndex]; 
+                
+                // add the new reading to the total
+                readings[readIndex] = touch;
+                total += readings[readIndex];
+                
+                // move to the next index
+                readIndex = (readIndex + 1) % NUM_READINGS;
+                
+                // calculating the average of all readings = new filtered sensor value
+                average = total / NUM_READINGS;
+
+                // printing filtered sensor value for debugging
+                Serial.print("Filtered Sensor Value: ");
+                Serial.println(average);
+
+                // filtered value determines if touch threshhold was reached and servo motor can go
+                if (average > TOUCH_THRESHOLD) {
+                    // servo motor updates position to 180 degrees
+                    myservo.write(180); 
+                } else {
+                    // servo motor updates or stays at position of 0 degrees
+                    myservo.write(0);
+                }
+
+                // delay for stability
+                delay(50);
+            }
+          </code></pre>
         </div>
         <br>
   
         <div class="vertical">
           <h3>
-            3. AnalogWrite and analogRead are respectively 8-bit and 10-bit values. 
-            Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. 
-            How would this change your map() code? Explain your answer.
+            3. Your input device is slightly noisy, leading the measurement to randomly deviate 
+            from the true measurement up or down by 10%. How can we address this? Answer in 
+            (pseudo)code.
           </h3>
-          <p>
-            If we had a 10-bit PWM means we would then expect values between 0 to 1023, instead 
-            of the normal 255, because now we can get values up to 2<sup>10</sup> = 1023. 
-            Therefore, the code would be "outputYValue = map(yval, 0, 1023, 0, 1023);".
-          </p>
-          <p>
-            If we had a 16-bit analog-to-digital convertor instead, we can now read ADC values up 
-            to 2<sup>16</sup> = 65535. The code would then be "outputYValue = map(yval, 0, 65535, 
-            0, 255);" as we're compressing that large amount of ADC values to 0-255.
-          </p>
+          <pre><code>
+            // defining constants for smoothing, using the exponential moving average strategy
+            const float ALPHA = 0.1;  // smoothing factor (between 0 and 1)
+            long smoothedValue = 0;   // stores filtered value
+
+            void setup() {
+                // beginning serial monitor
+                Serial.begin(9600);
+
+                //attaching servo to pin 9
+                myservo.attach(9);
+                
+                // initialize smoothed value with an initial sensor reading
+                smoothedValue = cs_4_2.capacitiveSensor(30);
+            }
+
+            void loop() {
+                // reads the raw sensor value to see if the metal object was touched
+                long raw = cs_4_2.capacitiveSensor(30); // takes 30 readings and returns sum of the results
+
+                // apply exponential moving average strategy
+                smoothedValue = (ALPHA * raw) + ((1 - ALPHA) * smoothedValue);
+
+                // printing filtered sensor value for debugging
+                Serial.print("Smoothed Sensor Value: ");
+                Serial.println(smoothedValue);
+
+                // smoothed value determines if touch threshhold was reached and servo motor can go
+                if (smoothedValue > TOUCH_THRESHOLD) {
+                    // servo motor updates position to 180 degrees
+                    myservo.write(180);
+                } else {
+                    // servo motor updates or stays at position of 0 degrees
+                    myservo.write(0);
+                }
+
+                // delay for stability
+                delay(50);
+            }
+          </code></pre>
         </div>
       </div>
       </div>
