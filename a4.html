@@ -15,7 +15,8 @@
       <h2>Overview</h2>
       <p>
         I created schematics (below) for two components: a capacitive sensor and a 
-        servo motor. For the capacitive sensor, it receives a signal through pin 2, 
+        servo motor. Both of these require libraries! For the capacitive sensor, it 
+        receives a signal through pin 2, 
         which is routed through a 1 megaohm resistor to pin 4. When you touch a metal 
         object (connected through an alligator clip), it triggers a change in 
         capacitance, sending a signal back to the system that it can read from (which 
@@ -44,6 +45,139 @@
         <p style="text-align: center;">Circuit of a capacitive sensor and a servo</p>
       </div>
     </div>
-    
+
+    <div class="vertical">
+      <h2>Coding the Firmware</h2>
+      <p>
+        I coded the firmware in an .ino file to implement a circuit where as soon as the 
+        sensor reads that the metal object has been directly touched, the servo motor 
+        position turns 180 degrees. It stays unmoving at 0 degrees otherwise. 
+      </p>
+      <p>
+        I used the serial monitor to read the sensor values and test what value would be 
+        best to use as the threshhold value for the system to know the metal object was 
+        touched. Realizing that at neutral/sitting/no-touching the sensor value is less 
+        than 100 and that touching the object brings it up to around 2000, I set the touch 
+        threshhold value to be at 1000. So the servo motor only changes position if that it 
+        senses the threshhold value or above it.
+      </p>
+      <pre><code>
+        // adding libraries for the capacitive sensor and servo
+        #include <CapacitiveSensor.h>
+        #include <Servo.h>
+
+        // initializing capacitive sensor
+        CapacitiveSensor cs_4_2 = CapacitiveSensor(4, 2); // input from pin 2 to pin 4
+
+        // initializing and defining servo
+        Servo myservo;
+
+        // threshhold to know when the metal object has been touched (based on serial monitor readings)
+        const int TOUCH_THRESHOLD = 1000; 
+
+        void setup() {
+            //turning off auto-calibration
+            cs_4_2.set_CS_AutocaL_Millis(0xFFFFFFFF); 
+
+            // beginning serial monitor
+            Serial.begin(9600);
+
+            //attaching servo to pin 9
+            myservo.attach(9);
+        }
+
+        void loop() {
+            // reads the sensor to see if the metal object was touched
+            long touch = cs_4_2.capacitiveSensor(30); // takes 30 readings and returns sum of the results
+
+            // printing raw sensor values for debugging
+            Serial.print("Sensor Value: ");
+            Serial.println(touch);
+
+            // delay for stability
+            delay(10);
+
+            // if touched, the servo motor updates position
+            if (touch > TOUCH_THRESHOLD) {
+                // servo updates position to 180 degrees
+                myservo.write(180);
+
+            // if not touched, the servo motors is unmoving or goes back to 0
+            } else {
+                // servo motor updates or stays at position of 0 degrees
+                myservo.write(0);
+            }
+
+            // delay for stability
+            delay(50); 
+        }
+      </code></pre>
+      <p>
+        Here is the final output operation! As you can see, every time I touch the 
+        metal object, the servo arm's position turns 180 degrees. And it comes right 
+        back to 0 once my finger is not on the object anymore. Yes, I had the motor 
+        turn left so I guess you can say it's turning to -180 degrees. 
+      </p>
+      <img src="images/A4_circuitop.GIF">
+    </div>
+    <p></p>
+
+    <div class="vertical">
+        <h2>Additional Questions</h2>
+        <div class="A1questions">
+          <div class="vertical">
+            <h3>
+            1. Say you are using a servo motor you attach to pin 9. In your loop() you have the following code:
+            <p><pre><code>for (int i=0, i<180, i++){servo.write(i); delay(100);}</code></p></pre>Draw a graph 
+            with the X axis in seconds, for two seconds, and the y-axis the voltage at pin 9 with respect to 
+            ground.
+            </h3>
+            <p>
+              Each step of the loop takes 100 milliseconds, or 0.1 seconds. Since there are 180 
+              steps in each loop, that means each loop takes a total of 0.1 * 180 = 18 seconds. 
+              This graph only covers 2 seconds, so 20 steps. At 0 seconds, the servo will be at 
+              position 0 and using 0V. At the end of the loop, 18 seconds, the servo would be at 
+              position 180 and at full voltage of 5V. Therefore at 2 seconds, the servo will 
+              be at position 20 and the voltage would be 1/9th (20/180) of 5V. 
+            </p>
+          </div>
+        </div>
+        <br>
+  
+        <div class="imagecaption">
+          <h3>
+            2. Draw a graph where the x-axis is time and the y-axis is voltage. Plot the 
+            voltage at V-measure of your voltage divider of your shared gif.
+          </h3>
+          <img src="images/A3_graph.jpeg">
+          <p>
+            This graph shows the change in voltage for the red and green LEDs corresponding 
+            to my gif where I first manipulate the joystick to the left, then up and down to 
+            make the red LED go from neutral, to dim then bright. Then I move the joystick to 
+            the right, then up and down to make the green LED go from neutral, to dim then bright 
+            (and back to neutral).
+          </p>
+        </div>
+        <br>
+  
+        <div class="vertical">
+          <h3>
+            3. AnalogWrite and analogRead are respectively 8-bit and 10-bit values. 
+            Imagine you had 10-bit PWM and a 16-bit analog-to-digital converter instead. 
+            How would this change your map() code? Explain your answer.
+          </h3>
+          <p>
+            If we had a 10-bit PWM means we would then expect values between 0 to 1023, instead 
+            of the normal 255, because now we can get values up to 2<sup>10</sup> = 1023. 
+            Therefore, the code would be "outputYValue = map(yval, 0, 1023, 0, 1023);".
+          </p>
+          <p>
+            If we had a 16-bit analog-to-digital convertor instead, we can now read ADC values up 
+            to 2<sup>16</sup> = 65535. The code would then be "outputYValue = map(yval, 0, 65535, 
+            0, 255);" as we're compressing that large amount of ADC values to 0-255.
+          </p>
+        </div>
+      </div>
+      </div>
   </body>
 </html>
