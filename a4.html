@@ -63,8 +63,8 @@
       </p>
       <pre><code>
         // adding libraries for the capacitive sensor and servo
-        #include <CapacitiveSensor.h>
-        #include <Servo.h>
+        #include &ltCapacitiveSensor.h&gt
+        #include &ltServo.h&gt
 
         // initializing capacitive sensor
         CapacitiveSensor cs_4_2 = CapacitiveSensor(4, 2); // input from pin 2 to pin 4
@@ -155,6 +155,10 @@
             int readIndex = 0;           // index for current reading
             long total = 0;              // total sum of the readings
             long average = 0;            // average value of the readings
+            
+            // libraries for the capacitive sensor and servo
+            #include &ltCapacitiveSensor.h&gt
+            #include &ltServo.h&gt
 
             void setup() {
                 // beginning serial monitor
@@ -216,6 +220,10 @@
             // defining constants for smoothing, using the exponential moving average strategy
             const float ALPHA = 0.1;  // smoothing factor (between 0 and 1)
             long smoothedValue = 0;   // stores filtered value
+
+            // libraries for the capacitive sensor and servo
+            #include &ltCapacitiveSensor.h&gt
+            #include &ltServo.h&gt
 
             void setup() {
                 // beginning serial monitor
