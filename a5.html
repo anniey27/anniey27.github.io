@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Annie's HCDE 439 Physical Computing Portfolio</title>
+
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="images/AYlogo.png" type="image/x-icon">
+  </head>
+  <body>
+    <h1 style="text-align: center;">Assignment 5: High(er) voltage and transistors!</h1>
+    <div class="vertical">
+      <h2>Overview</h2>
+      <p>
+        I created a schematic (below) for a DHT sensor (which reads temperature and 
+        humidity) that takes power from the Arduino, PWM signal from digital pin 4, 
+        and goes to ground. On the right of the schematic, I have an external power 
+        supply of a 9V battery powering a fan motor which is connected in parallel 
+        with a flyback diode to prevent voltage spikes. Then, this goes into a 
+        N-MOSFET transistor where the power goes into drain, the gate goes into 
+        digital pin 9 (to read PWM signals), and source goes into ground.
+      </p>
+      <div class="imagecaption">
+        <img src="images/A5_schematic.png"/>
+        <p style="text-align: center;">Schematic for a DHT11 sensor and a fan motor 
+            with a N-MOSFET transistor</p>
+      </div>
+    </div>
+
+    <div class="vertical">
+        <h2>Building the Circuit</h2>
+        <p>
+          Then, I built my circuit based on my schematic, starting with a 9V battery to 
+          power my fan motor. Between the positive and negative wires from the motor, I 
+          used a flyback diode which prevents voltage spikes. The negative wire is then 
+          also connected to the drain from the N-MOSFET transistor
+          
+          connecting pin 2 to a 1 megaohm resistor (for input) 
+          sending the signal to pin 4. I used an alligator clip to connect my resistor to my 
+          object of choice, which was a metal hook clasp. Touching the hook clasp would activate 
+          and send a signal back to the circuit. Then, I connected my servo motor to power, 
+          ground, and pin 9, which would send a PWM signal to the motor. 
+        </p>
+      <div class="imagecaption">
+        <img src="images/A5_circuit.jpeg"/>
+        <p style="text-align: center;">Circuit of a DHT11 sensor and fan motor</p>
+      </div>
+    </div>
+
+    <div class="vertical">
+      <h2>Coding the Firmware</h2>
+      <p>
+        I coded the firmware in an .ino file to implement a circuit where as soon as the 
+        sensor reads that the metal object has been directly touched, the servo motor 
+        position turns 180 degrees. It stays unmoving at 0 degrees otherwise. 
+      </p>
+      <p>
+        I used the serial monitor to read the sensor values and test what value would be 
+        best to use as the threshhold value for the system to know the metal object was 
+        touched. Realizing that at neutral/sitting/no-touching the sensor value is less 
+        than 100 and that touching the object brings it up to around 2000, I set the touch 
+        threshhold value to be at 1000. So the servo motor only changes position if that it 
+        senses the threshhold value or above it.
+      </p>
+      <pre><code>
+        // installing libraries for using DHT 11 sensor
+        #include &ltAdafruit_Sensor.h&gt
+        #include &ltDHT.h&gt
+        #include &ltDHT_U.h&gt
+
+        // defining digital pin connected to DHT sensor (sends signal)
+        #define DHTPIN 4
+        // defining DHT 11 sensor
+        #define DHTTYPE DHT11
+        // defining PWN pin that controls fan motor
+        #define FAN_PIN 9
+
+        // initialize DHT sensor 
+        DHT dht(DHTPIN, DHTTYPE);
+
+        // 24 degrees C is the threshhold for when this fan turns on
+        // found through testing with serial monitor
+        int TEMP_THRESHHOLD = 20;
+
+
+        void setup() {
+        // beginning serial monitor
+        Serial.begin(9600);
+
+        // beginning DHT sensor
+        dht.begin(); 
+
+        // setting the fan control pin as an output
+        pinMode(FAN_PIN, OUTPUT);
+
+        // start with the fan off
+        analogWrite(FAN_PIN, 0);
+        }
+
+
+        void loop() {
+        // wait a few seconds between readings for stability
+        delay(2000); 
+
+        // reads temperature from DHT sensor
+        float temp = dht.readTemperature();
+        
+        // printing temp values from sensor for testing/debugging
+        Serial.print("Temperature: ");
+        Serial.print(temp);
+        Serial.println(" °C");
+
+        // checking if temperature meets the threshhold, fan turns on if meets temp threshhold
+        if (temp >= TEMP_THRESHHOLD) {
+            // turn the fan on at a quarter of its speed (PWM value 64 out of 255)
+            analogWrite(FAN_PIN, 64);
+        } else {
+            // if temp is not at threshhold, fan turns off
+            analogWrite(FAN_PIN, 0);
+        }
+        }
+
+      </code></pre>
+      <p>
+        Here is the final output operation! At the very start of the video I blow 
+        hot air towards the sensor to bring it up above the temperature threshhold. 
+        By reaching it, the fan then turns on.
+      </p>
+      <img src="images/A5_circuitop.GIF">
+    </div>
+    <p></p>
+
+    <div class="vertical">
+        <h2>Additional Questions</h2>
+        <div class="A1questions">
+          <div class="vertical">
+            <h3>
+            1. Say you are using a servo motor you attach to pin 9. In your loop() you have the following code:
+            <p><pre><code>for (int i=0, i<180, i++){servo.write(i); delay(100);}</code></p></pre>Draw a graph 
+            with the X axis in seconds, for two seconds, and the y-axis the voltage at pin 9 with respect to 
+            ground.
+            </h3>
+            <p>
+              Pin 9 sends the PWM (pulse width modulation) signal to the servo, and the width of 
+              the signal determines the servo's position. It varies between 1 ms and 2 ms and the 
+              voltage alternates between 0V and 5V. For a fixed period of 20 ms, the pulse width 
+              increases from 1ms to 20ms. As the voltage oscillates between 0V and 5V, the amount 
+              of time the signal is at 5V gradually increases while the amount of time that the 
+              signal is at 0V gradually decreases. The PWM signal changes to control the servo's 
+              position.
+            </p>
+            <img src="images/A4_graph_1.jpeg">
+          </div>
+        </div>
+        <br>
+  
+        <div class="imagecaption">
+          <h3>
+            2. Your input device is slightly broken, leading it to give us an erroneous reading 
+            1% of the time. How can we address this? Answer in (pseudo)code.
+          </h3>
+          <pre><code>
+            // defining constants for calibration, which will be done by taking 10 readings and calculating the average
+            const int NUM_READINGS = 10; // averaging from this number of readings
+            long readings[NUM_READINGS];  // array for storing readings
+            int readIndex = 0;           // index for current reading
+            long total = 0;              // total sum of the readings
+            long average = 0;            // average value of the readings
+            
+            // libraries for the capacitive sensor and servo
+            #include &ltCapacitiveSensor.h&gt
+            #include &ltServo.h&gt
+
+            void setup() {
+                // beginning serial monitor
+                Serial.begin(9600);
+
+                //attaching servo to pin 9
+                myservo.attach(9);
+                
+                // initializing readings array
+                for (int i = 0; i < NUM_READINGS; i++) {
+                    readings[i] = 0; // starting with zero
+                }
+            }
+
+            void loop() {
+                // reads the sensor to see if the metal object was touched
+                long touch = cs_4_2.capacitiveSensor(30); // takes 30 readings and returns sum of the results
+
+                // subtract the last reading from the total
+                total -= readings[readIndex]; 
+                
+                // add the new reading to the total
+                readings[readIndex] = touch;
+                total += readings[readIndex];
+                
+                // move to the next index
+                readIndex = (readIndex + 1) % NUM_READINGS;
+                
+                // calculating the average of all readings = new filtered sensor value
+                average = total / NUM_READINGS;
+
+                // printing filtered sensor value for debugging
+                Serial.print("Filtered Sensor Value: ");
+                Serial.println(average);
+
+                // filtered value determines if touch threshhold was reached and servo motor can go
+                if (average > TOUCH_THRESHOLD) {
+                    // servo motor updates position to 180 degrees
+                    myservo.write(180); 
+                } else {
+                    // servo motor updates or stays at position of 0 degrees
+                    myservo.write(0);
+                }
+
+                // delay for stability
+                delay(50);
+            }
+          </code></pre>
+        </div>
+        <br>
+  
+        <div class="vertical">
+          <h3>
+            3. Your input device is slightly noisy, leading the measurement to randomly deviate 
+            from the true measurement up or down by 10%. How can we address this? Answer in 
+            (pseudo)code.
+          </h3>
+          <pre><code>
+            // defining constants for smoothing, using the exponential moving average strategy
+            const float ALPHA = 0.1;  // smoothing factor (between 0 and 1)
+            long smoothedValue = 0;   // stores filtered value
+
+            // libraries for the capacitive sensor and servo
+            #include &ltCapacitiveSensor.h&gt
+            #include &ltServo.h&gt
+
+            void setup() {
+                // beginning serial monitor
+                Serial.begin(9600);
+
+                //attaching servo to pin 9
+                myservo.attach(9);
+                
+                // initialize smoothed value with an initial sensor reading
+                smoothedValue = cs_4_2.capacitiveSensor(30);
+            }
+
+            void loop() {
+                // reads the raw sensor value to see if the metal object was touched
+                long raw = cs_4_2.capacitiveSensor(30); // takes 30 readings and returns sum of the results
+
+                // apply exponential moving average strategy
+                smoothedValue = (ALPHA * raw) + ((1 - ALPHA) * smoothedValue);
+
+                // printing filtered sensor value for debugging
+                Serial.print("Smoothed Sensor Value: ");
+                Serial.println(smoothedValue);
+
+                // smoothed value determines if touch threshhold was reached and servo motor can go
+                if (smoothedValue > TOUCH_THRESHOLD) {
+                    // servo motor updates position to 180 degrees
+                    myservo.write(180);
+                } else {
+                    // servo motor updates or stays at position of 0 degrees
+                    myservo.write(0);
+                }
+
+                // delay for stability
+                delay(50);
+            }
+          </code></pre>
+        </div>
+      </div>
+      </div>
+  </body>
+</html>

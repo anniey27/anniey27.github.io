@@ -88,13 +88,18 @@
 
       <div class="assignment">
         <a href="a5.html">
-          <h2>Assignment 5: !</h2>
+          <h2>Assignment 5: High(er) voltage and transistors!</h2>
           <img 
-            src="images/milo.jpg"
-          />
+              src="images/A5_circuit.jpeg" 
+              data-static="images/A5_circuit.jpeg"
+              data-animated="images/A5_circuitop.GIF"
+              onmouseover="this.src=this.getAttribute('data-animated')"
+              onmouseout="this.src=this.getAttribute('data-static')"
+            />
         </a>
         <p>
-          tbd
+          DHT11 temperature sensor writes to a fan at a certain temperature, 
+          using external power supply.
         </p>
     </div>
 
