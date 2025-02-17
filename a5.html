@@ -145,6 +145,16 @@
               operating in short bursts, row 4 indicates that the maximum amount of current is 
               I<sub>DM</sub> = <b>80 A</b>.
             </p>
+            <p>
+              The circuit I created draws much less current than 37.2 A. I used a 3-6V 
+              motor for the fan. Looking at this <a href="https://bc-robotics.com/shop/3-6v-dc-hobby-motor-260/#:~:text=DC%20motors%20come%20in%20all,Speed%20(6V):%2010000%20RPM" target=”_blank”>
+                website</a> (the closest I could find since I 
+              could not find a specific datasheet), at max voltage 6V, the motor draws a 
+              current of 0.13 A. Because the motor current is also the current that flows 
+              through the transistor (when it's on), the transistor in my circuit is only 
+              handling 0.13 A. This is quite safe considering it's much less than the 
+              transistor's max rating of 37.2 A.
+            </p>
           </div>
         </div>
         <br>
@@ -159,15 +169,15 @@
           <p>
             Pin 9 and GND use the Arduino.
           </p>
-          <a href="https://cdn-shop.adafruit.com/product-files/1321/6LR61.pdf">
+          <a href="https://cdn-shop.adafruit.com/product-files/1321/6LR61.pdf" target=”_blank”>
             9V battery datasheet</a>
-          <a href="https://cdn-shop.adafruit.com/product-files/2193/2193_capacitor_datasheet.pdf">
+          <a href="https://cdn-shop.adafruit.com/product-files/2193/2193_capacitor_datasheet.pdf" target=”_blank”>
             100μF electrolytic capacitor datasheet</a>
-          <a href="https://www.adafruit.com/product/711">
+          <a href="https://www.adafruit.com/product/711" target=”_blank”>
             Motor datasheet</a>
-          <a href="https://cdn-shop.adafruit.com/datasheets/1N4001-D.PDF">
+          <a href="https://cdn-shop.adafruit.com/datasheets/1N4001-D.PDF" target=”_blank”>
             Flyback diode datasheet</a>
-          <a href="https://www.diodes.com/assets/Datasheets/DMT6009LCT.pdf">
+          <a href="https://www.diodes.com/assets/Datasheets/DMT6009LCT.pdf" target=”_blank”>
             N-MOSFET datasheet</a>
         </div>
         <br>
