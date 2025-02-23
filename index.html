@@ -105,13 +105,19 @@
 
     <div class="assignment">
       <a href="a6.html">
-        <h2>Assignment 6: !</h2>
+        <h2>Assignment 6: Talking to the web!</h2>
         <img 
-          src="images/milo.jpg"
-        />
+            src="images/A6_image.jpeg" 
+            data-static="images/A6_image.jpeg"
+            data-animated="images/A6_circuitop.gif"
+            onmouseover="this.src=this.getAttribute('data-animated')"
+            onmouseout="this.src=this.getAttribute('data-static')"
+          />
+        </a>
       </a>
       <p>
-        tbd
+        Using a potentiometer and LDR sensors to map RGB values on a website, 
+        and pressing spacebar on the laptop turns an LED on/off.
       </p>
   </div>
     </div>

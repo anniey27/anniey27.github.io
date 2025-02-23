@@ -99,3 +99,14 @@ h3 {
 .assignment p {
   margin-top: 0.5em;
 }
+
+.final-operation {
+  display: flex;
+  align-items: flex-start; /* Align items at the top */
+  gap: 20px;             /* Optional: space between text and image */
+}
+
+.final-text, .imagecaption {
+  flex: 1;
+}
+
