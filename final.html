@@ -14,7 +14,251 @@
   </head>
   <body>
     <h1 style="text-align: center;">Boggle!</h1>
-    <img src="images/boggleintro.png">
-  
+    <img src="images/boggleintro.png" style="width: 75%; height: auto;" alt="Boggle Intro">
+    
+    <div class="vertical">
+      <h2>Technical Implementation</h2>
+      <p>
+        <b>Physical Computing (Arduino):</b>
+      </p>
+      <ul>
+        <li>4x4 keypad for player letter selection, push button for word submission</li>
+        <li>Random generation of a weighted 4x4 Boggle grid (favoring vowels and common letters)</li>
+        <li>Starts a 60-second game when triggered via serial command from website</li>
+        <li>Buzzer signals the game ending after 60 seconds</li>
+        <li>Serial communication sends game state messages (grid data, current word updates, word 
+          submissions, game over) over serial to the website</li>
+      </ul>
+      <p>
+        <b>Website (p5.js):</b>
+      </p>
+      <ul>
+        <li>"Start Game" button sends a serial command to trigger a new game on the Arduino</li>
+        <li>Using Free Dictionary API to check if submitted words are valid</li>
+        <li>Ignores words under 3 characters and duplicate submissions</li>
+        <li>Point system based on word length</li>
+      </ul>
+    </div>
+
+    <div class="vertical">
+      <h2>Circuit</h2>
+      <p>Here is the schematic for the physical componetns: keypad, buzzer, and button</p>
+      <div class="imagecaption">
+        <img src="images/final_schematic.png"/>
+      </div>
+      <br>
+      <p>Here is the circuit I created based on my schematic:</p>
+      <div class="imagecaption">
+        <img src="images/final_circuit.png"/>
+      </div>
+      <br>
+    </div>
+
+    <div class="vertical">
+      <h2>Code</h2>
+      <p>
+        <b>sketch.ino (Arduino code):</b>
+      </p>
+      <pre><code>
+        #include &lt;Keypad.h&gt;
+
+          // --------------------
+          // Game Settings & Global Variables
+          // --------------------
+          const int gridRows = 4; // 4 rows for boggle board
+          const int gridCols = 4; // 4 cols for boggle board
+          char grid[gridRows][gridCols]; // boggle board grid
+          
+          const int gridButtonPin = 2;  // Physical button for word submission only
+          const int buzzerPin = 12;     // Buzzer pin
+          
+          bool gameActive = false; // checks if there's a game active
+          unsigned long gameStartTime = 0; // 0 seconds gone at start of game
+          const unsigned long gameDuration = 60000; // 60 seconds
+          
+          String currentWord = ""; // current word the player is typing
+          
+          bool lastButtonState = HIGH; // for button debouncing
+          
+          // tracks whether a grid cell (keypad button) has been used in the current word.
+          bool usedCells[gridRows][gridCols];
+          
+          // KEYPAD SETUP
+          const byte ROWS = 4; // 4 rows 
+          const byte COLS = 4; // 4 cols
+          // keypad
+          char keys[ROWS][COLS] = {
+            {'1','2','3','A'},
+            {'4','5','6','B'},
+            {'7','8','9','C'},
+            {'*','0','#','D'}
+          };
+          
+          // row1 -> pin11, row2 -> pin10, row3 -> pin9, row4 -> pin8
+          byte rowPins[ROWS] = {11, 10, 9, 8};
+          // col1 -> pin7, col2 -> pin6, col3 -> pin5, col4 -> pin4
+          byte colPins[COLS] = {7, 6, 5, 4};
+          
+          // creating keypad
+          Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+          
+          // resets all cells to "unused" state for next word so player can use them again
+          void resetUsedCells() {
+            for (int i = 0; i < gridRows; i++) {
+              for (int j = 0; j < gridCols; j++) {
+                usedCells[i][j] = false;
+              }
+            }
+          }
+          
+          // Generating a random 4x4 grid of letters with weighted probability
+          void generateGrid() {
+            const char weightedLetters[] =
+              "EEEEEEEEEEEE"  // 12 E's
+              "AAAAAAA"       // 7 A's
+              "OOOOOOO"       // 7 O's
+              "IIIIIII"       // 7 I's
+              "TTTTTTTT"      // 8 T's
+              "NNNNNN"        // 6 N's
+              "SSSSSS"        // 6 S's
+              "RRRRRR"        // 6 R's
+              "LLL"           // 3 L's
+              "UUUU"          // 4 U's
+              "DDDD"          // 4 D's
+              "FF"            // 2 F's
+              "GG"            // 2 G's
+              "HHHH"          // 4 H's
+              "BB"            // 2 B's
+              "CC"            // 2 C's
+              "MM"            // 2 M's
+              "PP"            // 2 P's
+              "WW"            // 2 W's
+              "YY"            // 2 Y's
+              "VKXJQZ";       // 1 each of less common letters
+          
+            int weightedLength = sizeof(weightedLetters) - 1; // Exclude null terminator
+          
+            // generate new grid
+            Serial.println("Generating New Grid:");
+            // go through each row and column
+            for (int i = 0; i < gridRows; i++) {
+              for (int j = 0; j < gridCols; j++) {
+                // picking random letter with weight in mind
+                int idx = random(0, weightedLength);
+                // adding letter to grid
+                grid[i][j] = weightedLetters[idx];
+                Serial.print(grid[i][j]);
+                Serial.print(" ");
+              }
+              Serial.println();
+            }
+            Serial.println();
+          }
+          
+          // Called to start a new game: clears the current word, generates a new grid,
+          // resets the usedCells array, and starts the timer.
+          void startGame() {
+            currentWord = ""; 
+            resetUsedCells();
+            generateGrid();
+            gameActive = true;
+            gameStartTime = millis();
+            Serial.println("New Game Started");
+          }
+          
+          // Called when 60 seconds have elapsed: sounds the buzzer using tone() and ends the game.
+          void endGame() {
+            Serial.println("Game Over");
+            tone(buzzerPin, 1000, 500); // Sound buzzer at 1000 Hz for 500ms
+            delay(500);
+            gameActive = false;
+            // Reset usedCells for next word
+            resetUsedCells();
+          }
+          
+          void setup() {
+            Serial.begin(9600); // begin serial communication
+            // Setting gridButtonPin as an input with an internal pull-up resistor
+            pinMode(gridButtonPin, INPUT_PULLUP); 
+            
+            // // Read the initial state of the button and store it in lastButtonState
+            lastButtonState = digitalRead(gridButtonPin);
+            
+            resetUsedCells(); // Initialize usedCells at start up
+          }
+          
+          void loop() {
+            // Listen for serial commands from the website.
+            if (Serial.available() > 0) {
+              String command = Serial.readStringUntil('\n');
+              command.trim();
+              if (command == "START") {
+                startGame();
+              }
+            }
+            
+            // If game is active, check for end of time
+            if (gameActive && (millis() - gameStartTime >= gameDuration)) {
+              endGame();
+            }
+            
+            // Process physical button press for word submission
+            bool currentButtonState = digitalRead(gridButtonPin); // read last button state
+            if (gameActive && (lastButtonState == HIGH && currentButtonState == LOW)) {
+              if (currentWord.length() > 0) {
+                Serial.print("Submitted word: ");
+                Serial.println(currentWord);
+                // When the word is submitted, usedCells array is reset so the new word can reuse cells
+                resetUsedCells();
+                // resets current word to nothing after submitting
+                currentWord = "";
+              }
+              delay(50); // Debounce delay
+            }
+            lastButtonState = currentButtonState;
+            
+            // Process keypad input only when a game is active.
+            char key = keypad.getKey();
+            if (gameActive && key != NO_KEY) {
+              int pressedRow = -1, pressedCol = -1;
+              // Find the pressed key's row and column.
+              for (int i = 0; i < ROWS; i++) {
+                for (int j = 0; j < COLS; j++) {
+                  if (keys[i][j] == key) {
+                    pressedRow = i;
+                    pressedCol = j;
+                    break;
+                  }
+                }
+                if (pressedRow != -1) break;
+              }
+              // Only add the letter if this cell has not been used yet.
+              if (pressedRow != -1 && pressedCol != -1) {
+                if (!usedCells[pressedRow][pressedCol]) {
+                  char letter = grid[pressedRow][pressedCol];
+                  currentWord += letter; // adds an extra letter
+                  usedCells[pressedRow][pressedCol] = true; // Mark this cell as used
+                  Serial.print("Current word: ");
+                  Serial.println(currentWord);
+                } else {
+                  Serial.print("Cell (");
+                  Serial.print(pressedRow);
+                  Serial.print(",");
+                  Serial.print(pressedCol);
+                  Serial.println(") already used for this word.");
+                }
+              }
+            }
+          }
+          
+      </code></pre>
+
+      <p>
+        <b>p5.js (Website code):</b>
+      </p>
+      <pre><code>
+        
+      </code></pre>
+    </div>
   </body>
 </html>
